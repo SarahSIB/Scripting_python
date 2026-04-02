@@ -1,79 +1,75 @@
-"""
-Projet : MonOrganiseur
-Description : Automatisation de la gestion de tâches (artefacts)
-"""
-
 import tkinter as tk
 from tkinter import messagebox
 
+# --- CONSTANTES ---
+TITRE_APP = "MonOrganiseur - To-Do List"
 
-TITRE_APPLICATION = "MonOrganiseur - Scripting Python"
+# --- LOGIQUE (FONCTIONS) ---
 
+def actualiser_liste():
+    """Utilise une boucle for pour rafraîchir l'affichage."""
+    listbox_visuelle.delete(0, tk.END)
+    for index, item in enumerate(taches_donnees, start=1):
+        # Utilisation de booleens (True/False) comme vu en cours
+        statut = "✅" if item["faite"] else "❌"
+        listbox_visuelle.insert(tk.END, f"{index}. {item['tache']} [{statut}]")
 
-def ajouter_tache(entree, liste_donnees, listbox):
-    """
-    Ajoute un artefact à la collection de données.
-    Utilise le type 'str' pour la description. 
-    """
-    tache_texte = entree.get()
-    
-    if tache_texte.strip() == "":
-        messagebox.showwarning("Erreur", "La tâche est vide !")
-        return
+def ajouter_tache():
+    Texte = entree.get().strip()
+    if Texte:
+        # On crée un dictionnaire (dict) pour l'artefact
+        nouvelle_tache = {"tache": Texte, "faite": False}
+        taches_donnees.append(nouvelle_tache)
+        entree.delete(0, tk.END)
+        actualiser_liste()
+    else:
+        messagebox.showwarning("Erreur", "Le champ est vide !")
 
-    nouvel_artefact = {"tache": tache_texte, "faite": False}
-    liste_donnees.append(nouvel_artefact)
-    
-    entree.delete(0, tk.END)
-    actualiser_affichage(liste_donnees, listbox)
-
-def actualiser_affichage(liste_donnees, listbox):
-    """
-    Parcourt la collection (List) pour mettre à jour l'interface. 
-    Utilise une boucle 'for'. [cite: 20]
-    """
-    listbox.delete(0, tk.END)
-    for index, artefact in enumerate(liste_donnees, start=1):
-        # Utilisation de booléens pour le statut 
-        statut = "✅" if artefact["faite"] else "❌"
-        listbox.insert(tk.END, f"{index}. {artefact['tache']} [{statut}]")
-
-def marquer_terminee(liste_donnees, listbox):
-    """
-    Gère les erreurs avec try/except pour la sélection. [cite: 25]
-    """
+def marquer_terminee():
+    """Bascule le statut 'faite' en utilisant try/except."""
     try:
-        selection = listbox.curselection()
-        if not selection:
-            raise IndexError("Aucun élément sélectionné")
-            
+        selection = listbox_visuelle.curselection()
         index = selection[0]
-        liste_donnees[index]["faite"] = True
-        actualiser_affichage(liste_donnees, listbox)
+        # On modifie la valeur dans le dictionnaire
+        taches_donnees[index]["faite"] = True
+        actualiser_liste()
     except IndexError:
-        messagebox.showwarning("Attention", "Sélectionnez une tâche.")
+        messagebox.showinfo("Info", "Sélectionnez une tâche à valider.")
 
+def supprimer_tache():
+    """Supprime l'élément de la liste (List)."""
+    try:
+        selection = listbox_visuelle.curselection()
+        index = selection[0]
+        # .pop() retire l'élément de la collection
+        taches_donnees.pop(index)
+        actualiser_liste()
+    except IndexError:
+        messagebox.showwarning("Erreur", "Sélectionnez une tâche à supprimer.")
 
-
+# --- INTERFACE (MAIN) ---
 if __name__ == "__main__":
-    taches = []   
+    # Notre collection de données (List)
+    taches_donnees = []
 
-    
-    root = tk.Tk()
-    root.title(TITRE_APPLICATION)
+    fenetre = tk.Tk()
+    fenetre.title(TITRE_APP)
 
-    entree_tache = tk.Entry(root, width=40)
-    entree_tache.pack(pady=10)
+    entree = tk.Entry(fenetre, width=40)
+    entree.pack(pady=10)
 
-    btn_ajout = tk.Button(root, text="Ajouter", 
-                          command=lambda: ajouter_tache(entree_tache, taches, liste_visuelle))
-    btn_ajout.pack()
+    # Bouton pour AJOUTER
+    tk.Button(fenetre, text="Ajouter la tâche", command=ajouter_tache).pack(pady=2)
 
-    liste_visuelle = tk.Listbox(root, width=50)
-    liste_visuelle.pack(pady=10)
+    listbox_visuelle = tk.Listbox(fenetre, width=50)
+    listbox_visuelle.pack(pady=10)
 
-    btn_ok = tk.Button(root, text="Marquer Faite", 
-                       command=lambda: marquer_terminee(taches, liste_visuelle))
-    btn_ok.pack()
+    # Bouton pour TERMINER (Le bouton "OK")
+    tk.Button(fenetre, text="Marquer comme terminée (OK)", 
+              fg="green", command=marquer_terminee).pack(pady=2)
 
-    root.mainloop()
+    # Bouton pour SUPPRIMER
+    tk.Button(fenetre, text="Supprimer la tâche", 
+              fg="red", command=supprimer_tache).pack(pady=2)
+
+    fenetre.mainloop()
