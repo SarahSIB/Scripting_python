@@ -1,16 +1,12 @@
 import os  # Pour les interactions système mentionnées dans le cours [cite: 82]
 
-TITRE_APPLICATION = "MON ORGANISEUR - VERSION SCRIPT"
+TITRE_APPLICATION = "MON ORGANISEUR - TO DO LIST"
 
 
 def afficher_menu():
     """Affiche les options disponibles dans le script."""
-    print(f"\n--- {TITRE_APPLICATION} ---")
-    print("1. Lister les artefacts (tâches)")
-    print("2. Ajouter un artefact")
-    print("3. Marquer comme terminé (OK)")
-    print("4. Supprimer un artefact")
-    print("5. Quitter")
+ 
+    print("\n1. Lister les taches| 2. Ajouter  une tache| 3. Tache Terminée | 4. Supprimer une tache| 5. Quitter")
 
 def lister_taches(collection):
     """
